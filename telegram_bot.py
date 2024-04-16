@@ -8,7 +8,9 @@ load_dotenv()
 class Tele:
     API_TOKEN = os.getenv("TG_BOT_TOKEN")
     bot = telebot.TeleBot(API_TOKEN)
-    participants = set()
+    participants = []
+    n = 2
+    employer = EmployerGPT(["Здравствуйте"] * n, 'logs.txt')
 
     @staticmethod
     @bot.message_handler(commands=['start'])
@@ -18,14 +20,18 @@ class Tele:
     @staticmethod
     @bot.message_handler(commands=['join'])
     def _join_chat(message):
-        if message.chat.id in Tele.participants:
+        if message.chat.id in Tele.participants or len(Tele.participants) >= Tele.n:
             return
         Tele.bot.send_message(message.chat.id, "В этом чате присутствуют:")
         for participant in Tele.participants:
             Tele.bot.send_message(participant, f"{message.chat.id} присоединился")
             Tele.bot.send_message(message.chat.id, f"{participant}")
-        Tele.participants.add(message.chat.id)
-        Tele.bot.reply_to(message, "Вы присоединились к беседе.")
+        Tele.bot.reply_to(message, f"Вы присоединились к беседе под номером {len(Tele.participants)}")
+        Tele.participants.append(message.chat.id)
+        if len(Tele.participants) >= Tele.n:
+            who, reply = Tele.employer.say_first_sentence()
+            for participant_num in range(len(Tele.participants)):
+                Tele.bot.send_message(Tele.participants[participant_num], text=f"Сообщение для {who}: {reply}")
 
     @staticmethod
     @bot.message_handler(commands=['leave'])
@@ -36,6 +42,7 @@ class Tele:
         for participant in Tele.participants:
             Tele.bot.send_message(participant, f"{message.chat.id} покинул беседу")
         Tele.bot.reply_to(message, "Вы покинули беседу.")
+        Tele.employer.delete_person(Tele.participants.index(message.chat.id))
 
     @staticmethod
     @bot.message_handler(func=lambda message: True)
@@ -43,9 +50,13 @@ class Tele:
         if message.from_user.is_bot:
             return
 
-        for participant in Tele.participants:
+        person_number = Tele.participants.index(message.chat.id)
+        who, reply = Tele.employer.answer_on_message(person_number, message.text)
+        for participant_num in range(len(Tele.participants)):
+            participant = Tele.participants[participant_num]
             if participant != message.chat.id:
-                Tele.bot.send_message(participant, message.text)
+                Tele.bot.send_message(participant, f"{person_number}: {message.text}")
+            Tele.bot.send_message(Tele.participants[participant_num], text=f"Сообщение для {who}: {reply}")
 
     @staticmethod
     def start_polling():
