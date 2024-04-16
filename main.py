@@ -1,4 +1,4 @@
-from telegram_bot_settings import *
+from telegram_bot import *
 
 
 def main():

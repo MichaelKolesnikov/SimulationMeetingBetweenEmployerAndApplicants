@@ -1,5 +1,6 @@
 import os
 import telebot
+from EmployerGPT import EmployerGPT
 from dotenv import load_dotenv
 load_dotenv()
 
