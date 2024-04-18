@@ -4,7 +4,7 @@ from description_of_spaces import *
 
 
 class Person:
-    def __init__(self, prev_scheme, current_scheme, appr, feelings, schemes, dialog):
+    def __init__(self, prev_scheme, current_scheme, appr, feelings, schemes, dialog, name: str):
         self.prev_scheme = prev_scheme
         self.current_scheme = current_scheme
         self.appr = copy.deepcopy(appr)
@@ -12,6 +12,7 @@ class Person:
         self.schemes = copy.deepcopy(schemes)
         self.dialog = copy.deepcopy(dialog)
         self.last_message: str = ""
+        self.name: str = name
 
     def action_effect(self, message):
         r = gpt_settings.forgetting_factor
