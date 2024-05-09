@@ -3,9 +3,9 @@ from Person import Person
 
 
 class EmployerGPT:
-    def __init__(self, names: list[str], start_messages: list[str], logging_file_name: str = 'logs.txt'):
+    def __init__(self, names: list[str], start_messages: list[str], logging_file_name: str = 'logs1and2.txt'):
         self.appraisals: list[list[float]] = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0]]
-        self.feelings = [[0, 0.5, 0.5, 0.6, 0.6], [0.6, 0.6, 0.4, 0.6, 0.2], [0.3, 0.3, 0.3, 0.4]]
+        self.feelings = [[0, 0.45, 0.45, 0.5, 0.5], [0.4, 0.4, 0.4, 0.3, 0.2], [0.3, 0.3, 0.3, 0.4]]
         self.logging_file_name = logging_file_name
         self.schemes = [False, False, False]
 
@@ -26,7 +26,7 @@ class EmployerGPT:
         return self.persons[who].name, reply
 
     def write(self, some_string: str):
-        with open(self.logging_file_name, 'a') as f:
+        with open(self.logging_file_name, 'a', encoding='utf-8') as f:
             f.write(some_string)
 
     def answer_on_message(self, who_name: str, message: str) -> tuple[str, str] | None:
@@ -60,7 +60,7 @@ class EmployerGPT:
 
 
 def main():
-    employer = EmployerGPT(["Michael", "Jake"], ["Здравствуйте", "Добрый день!"], "lol.txt")
+    employer = EmployerGPT(["Michael", "Jake"], ["Здравствуйте", "Добрый день!"], "log.txt")
     who, reply = employer.say_first_sentence()
     while True:
         print(reply)
